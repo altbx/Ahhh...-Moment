@@ -1,0 +1,41 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Load dataset
+heart = pd.read_csv("heart.csv")
+# Style
+sns.set(style="whitegrid")
+# Show data
+print(heart.head())
+# 1. Count Plot
+sns.countplot(x='target', data=heart)
+plt.title("Heart Disease Count")
+plt.show()
+# 2. Histogram
+plt.figure(figsize=(8,5))
+plt.hist(heart['age'], bins=10)
+
+plt.title("Age Distribution")
+plt.xlabel("Age")
+plt.ylabel("Count")
+
+plt.show()
+# 3. Scatter Plot
+plt.figure(figsize=(8,5))
+plt.scatter(heart['age'], heart['chol'])
+
+plt.title("Age vs Cholesterol")
+plt.xlabel("Age")
+plt.ylabel("Cholesterol")
+
+plt.show()
+# 4. Heatmap
+cols = ['age','chol','thalach','target']
+
+corr = heart[cols].corr()
+
+plt.figure(figsize=(10,6))
+sns.heatmap(corr, annot=True)
+
+plt.title("Correlation Heatmap")
+plt.show()
