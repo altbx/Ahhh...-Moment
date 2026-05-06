@@ -1,39 +1,73 @@
-import pandas as pd
-import numpy as np
-df = pd.read_csv('fb.csv')
-df.head()
-df.shape
-df.columns
-df.describe()
-# a. Create data subsets
-subset_1 = df[['like', 'share', 'Type']]
-subset_1
+CREATE DATABASE mohitdb;
+USE mohitdb;
 
-subset_2 = df[['comment', 'Type']]
-subset_2
+CREATE TABLE flight(
+flightno INT,
+dest VARCHAR(10),
+year INT,
+day INT,
+delay FLOAT
+);
 
-# b. Merge Data
-merged_data = pd.merge(subset_1, subset_2, on='Type')
-merged_data.head()
-# c. Sort Data
-merged_data = merged_data.sort_values(by='like', ascending=False)
-merged_data.head()
-# d. Transposing Data
-merged_data.transpose()
-merged_data.T
-# e. Shape and reshape Data
-df.shape
+ALTER TABLE flight RENAME TO flightn;
 
-melted_data = pd.melt(
-    df,
-    id_vars=['Type'],
-    value_vars=['like', 'share', 'comment']
+DROP TABLE flightn;
+
+CREATE TABLE flight1(
+flightno INT,
+dest VARCHAR(10),
+year INT,
+day INT,
+delay FLOAT
 )
-melted_data
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE;
 
-pivot_data = df.pivot_table(
-    values='like',
-    index='Type',
-    aggfunc='mean'
+INSERT INTO flight1 VALUES
+(101,'pune',2008,1,30.01),
+(102,'cat',2008,2,30.37);
+
+CREATE EXTERNAL TABLE flightex(
+flightno INT,
+dest VARCHAR(10),
+year INT,
+day INT,
+delay FLOAT
 )
-pivot_data
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE
+LOCATION '/user/hive/flightex';
+
+INSERT INTO flightex SELECT * FROM flight1;
+
+SELECT * FROM flightex;
+
+CREATE TABLE flightj(
+flightno INT,
+source VARCHAR(10)
+)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+
+INSERT INTO flightj VALUES(101,'flih');
+
+SELECT * 
+FROM flight1 a
+JOIN flightj b
+ON a.flightno=b.flightno;
+
+SELECT day,AVG(delay)
+FROM flight1
+WHERE year=2008
+GROUP BY day;
+
+CREATE INDEX flight_index
+ON TABLE flight1(flightno)
+AS 'org.apache.hadoop.hive.ql.index.compact.CompactIndexHandler'
+WITH DEFERRED REBUILD;
+
+ALTER INDEX flight_index ON flight1 REBUILD;
