@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+
+# Read dataset
+air = pd.read_csv("airquality_data.csv", encoding='latin1')
+
+print(air.head())
+
+# Data Cleaning
+print("Missing Values Before Cleaning")
+print(air.isnull().sum())
+
+air.fillna(air.mean(numeric_only=True), inplace=True)
+
+print("Missing Values After Cleaning")
+print(air.isnull().sum())
+
+# Data Integration
+air['id'] = range(len(air))
+
+print(air.head())
+
+# Data Transformation
+air['so2'] = (air['so2'] - air['so2'].min()) / (air['so2'].max() - air['so2'].min())
+
+print(air.head())
+
+# Error Correction
+print("Duplicate Rows Before:", air.duplicated().sum())
+
+air.drop_duplicates(inplace=True)
+
+num_cols = air.select_dtypes(include=np.number).columns
+air[num_cols] = air[num_cols].clip(lower=0)
+
+print("Duplicate Rows After:", air.duplicated().sum())
+
+# Model Building
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+
+air = air.select_dtypes(include=np.number)
+
+X = air.drop('so2', axis=1)
+y = air['so2']
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+score = model.score(X_test, y_test)
+
+print("Model Accuracy:", score)
