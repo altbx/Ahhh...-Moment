@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+df = pd.read_csv('fb.csv')
+df.head()
+df.shape
+df.columns
+df.describe()
+# a. Create data subsets
+subset_1 = df[['like', 'share', 'Type']]
+subset_1
+
+subset_2 = df[['comment', 'Type']]
+subset_2
+
+# b. Merge Data
+merged_data = pd.merge(subset_1, subset_2, on='Type')
+merged_data.head()
+# c. Sort Data
+merged_data = merged_data.sort_values(by='like', ascending=False)
+merged_data.head()
+# d. Transposing Data
+merged_data.transpose()
+merged_data.T
+# e. Shape and reshape Data
+df.shape
+
+melted_data = pd.melt(
+    df,
+    id_vars=['Type'],
+    value_vars=['like', 'share', 'comment']
+)
+melted_data
+
+pivot_data = df.pivot_table(
+    values='like',
+    index='Type',
+    aggfunc='mean'
+)
+pivot_data
