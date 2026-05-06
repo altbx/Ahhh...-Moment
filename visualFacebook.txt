@@ -1,0 +1,35 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+df = pd.read_csv("fb.csv")
+# Style
+sns.set(style="whitegrid")
+print(df.head())
+# 1. Line Plot
+plt.figure(figsize=(10,6))
+plt.plot(df['like'][::50], marker='o')
+plt.title("Likes Trend")
+plt.xlabel("Index")
+plt.ylabel("Likes")
+plt.show()
+# 2. Histogram
+plt.figure(figsize=(8,5))
+plt.hist(df['share'], bins=10)
+plt.title("Share Distribution")
+plt.xlabel("Shares")
+plt.ylabel("Count")
+plt.show()
+# 3. Count Plot
+sns.countplot(x='Type', data=df)
+plt.title("Post Type Count")
+plt.show()
+# 4. Heatmap
+cols = ['like','share','comment']
+
+corr = df[cols].corr()
+
+plt.figure(figsize=(8,5))
+sns.heatmap(corr, annot=True)
+
+plt.title("Facebook Correlation Heatmap")
+plt.show()
